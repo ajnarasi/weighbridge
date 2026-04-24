@@ -1,0 +1,1190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Halt at Pondy — Venture Brief</title>
+<style>
+:root {
+  --bg: oklch(97% 0.01 80);
+  --ink: oklch(18% 0.01 60);
+  --muted: oklch(45% 0.01 60);
+  --rule: oklch(88% 0.01 70);
+  --paper: oklch(99% 0.005 80);
+  --accent: oklch(55% 0.14 55);
+  --accent-soft: oklch(93% 0.04 60);
+  --ok: oklch(52% 0.12 150);
+  --warn: oklch(60% 0.14 75);
+  --stop: oklch(52% 0.18 25);
+
+  --serif: "Iowan Old Style","Palatino Linotype","Palatino","Book Antiqua",Georgia,serif;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI","Inter","Helvetica Neue",Arial,sans-serif;
+  --mono: ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+
+  --t-xs: 0.75rem;
+  --t-sm: 0.875rem;
+  --t-base: 1rem;
+  --t-lg: 1.125rem;
+  --t-xl: 1.375rem;
+  --t-2xl: 1.875rem;
+  --t-3xl: clamp(2rem, 1.2rem + 2.4vw, 3rem);
+  --t-hero: clamp(2.5rem, 1rem + 4.5vw, 4.25rem);
+
+  --gap-1: 0.5rem;
+  --gap-2: 1rem;
+  --gap-3: 1.5rem;
+  --gap-4: 2rem;
+  --gap-5: 3rem;
+  --gap-6: 5rem;
+
+  --dur: 200ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+body {
+  font-family: var(--sans);
+  font-size: var(--t-base);
+  line-height: 1.55;
+  font-feature-settings: "ss01","cv01";
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,h4 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01em; line-height: 1.15; margin: 0; }
+h1 { font-size: var(--t-hero); letter-spacing: -0.025em; }
+h2 { font-size: var(--t-3xl); letter-spacing: -0.02em; }
+h3 { font-size: var(--t-2xl); }
+h4 { font-size: var(--t-xl); font-family: var(--sans); font-weight: 600; letter-spacing: 0; }
+p { margin: 0 0 1em; }
+a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+code { font-family: var(--mono); font-size: 0.9em; background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: var(--gap-4) 0; }
+
+.shell { max-width: 1180px; margin: 0 auto; padding: 0 var(--gap-3); }
+
+/* ───── Hero ───── */
+header.hero {
+  padding: var(--gap-6) 0 var(--gap-4);
+  border-bottom: 1px solid var(--rule);
+}
+.kicker {
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--gap-2);
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero .deck {
+  margin-top: var(--gap-3);
+  font-size: var(--t-lg);
+  max-width: 68ch;
+  color: var(--muted);
+}
+.hero .meta {
+  margin-top: var(--gap-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-4);
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+.hero .meta span { display: flex; flex-direction: column; }
+.hero .meta strong { color: var(--ink); font-weight: 500; }
+
+/* ───── Verdict strip ───── */
+.verdict {
+  background: var(--accent-soft);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: var(--gap-3) 0;
+}
+.verdict .inner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--gap-3);
+  align-items: center;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--mono);
+  border: 1px solid currentColor;
+}
+.badge.ok { color: var(--ok); }
+.badge.warn { color: var(--warn); }
+.badge.stop { color: var(--stop); }
+.badge.neutral { color: var(--muted); }
+.verdict h2 { font-size: var(--t-xl); }
+
+/* ───── Tab nav ───── */
+nav.tabs {
+  position: sticky; top: 0; z-index: 10;
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  backdrop-filter: saturate(180%) blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+.tabs-inner {
+  display: flex; gap: var(--gap-1);
+  overflow-x: auto; scrollbar-width: none;
+  padding: var(--gap-2) 0;
+}
+.tabs-inner::-webkit-scrollbar { display: none; }
+.tab {
+  border: 0; background: transparent;
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+/* ───── Panels ───── */
+.panel { padding: var(--gap-5) 0; border-bottom: 1px solid var(--rule); }
+.panel[hidden] { display: none; }
+.panel .eyebrow {
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: var(--gap-1);
+}
+.panel > h2 { margin-bottom: var(--gap-2); max-width: 30ch; }
+.panel > .lead { max-width: 68ch; color: var(--muted); font-size: var(--t-lg); margin-bottom: var(--gap-4); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr; gap: var(--gap-4); }
+@media (min-width: 800px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+
+.grid-3 { display: grid; grid-template-columns: 1fr; gap: var(--gap-3); }
+@media (min-width: 760px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: var(--gap-3);
+  border-radius: 4px;
+}
+.card .cap {
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.card h3 { font-size: var(--t-xl); margin: 8px 0 12px; }
+.card .metric { font-family: var(--serif); font-size: var(--t-3xl); line-height: 1; color: var(--accent); display: block; margin-bottom: 8px; }
+.card .metric.ink { color: var(--ink); }
+.card ul { margin: 0; padding-left: 1.1em; }
+.card li { margin-bottom: 4px; }
+
+/* ───── Tables ───── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-sm);
+  margin: var(--gap-3) 0;
+}
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-family: var(--mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.highlight td { background: var(--accent-soft); font-weight: 600; }
+td.rank { font-family: var(--mono); color: var(--accent); font-weight: 600; }
+
+/* ───── Callouts ───── */
+.callout {
+  border-left: 3px solid var(--accent);
+  padding: 12px 0 12px 16px;
+  margin: var(--gap-3) 0;
+  color: var(--ink);
+}
+.callout.stop { border-color: var(--stop); }
+.callout.warn { border-color: var(--warn); }
+.callout .tag {
+  font-family: var(--mono); font-size: var(--t-xs); letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); display: block; margin-bottom: 4px;
+}
+.callout.stop .tag { color: var(--stop); }
+.callout.warn .tag { color: var(--warn); }
+
+/* ───── SVG containers ───── */
+.drawing {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: var(--gap-3);
+  border-radius: 4px;
+  margin: var(--gap-3) 0;
+}
+.drawing figcaption {
+  margin-top: var(--gap-2);
+  font-size: var(--t-sm);
+  color: var(--muted);
+  font-family: var(--mono);
+}
+.drawing svg { display: block; width: 100%; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; font-size: var(--t-xs); font-family: var(--mono); color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+
+/* ───── Expert list ───── */
+.experts { display: grid; grid-template-columns: 1fr; gap: var(--gap-2); }
+@media (min-width: 700px) { .experts { grid-template-columns: 1fr 1fr; } }
+.expert {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: var(--gap-2) var(--gap-3);
+  background: var(--paper);
+}
+.expert .who {
+  font-family: var(--serif);
+  font-size: var(--t-lg);
+  margin-bottom: 4px;
+}
+.expert .lens {
+  font-family: var(--mono); font-size: var(--t-xs); color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; display: block;
+}
+.expert .quote { font-size: var(--t-sm); color: var(--ink); margin-bottom: 10px; }
+.expert .assume { font-size: var(--t-xs); color: var(--muted); font-style: italic; }
+
+/* ───── Timeline ───── */
+.rounds { counter-reset: r; display: grid; gap: var(--gap-2); }
+.round { border-left: 2px solid var(--rule); padding: 0 0 var(--gap-1) var(--gap-3); position: relative; }
+.round::before {
+  counter-increment: r;
+  content: "R" counter(r);
+  position: absolute; left: -22px; top: 0;
+  width: 40px; height: 24px;
+  background: var(--ink); color: var(--paper);
+  font-family: var(--mono); font-size: var(--t-xs);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 3px;
+}
+.round h4 { font-size: var(--t-base); margin-bottom: 4px; }
+.round p { font-size: var(--t-sm); color: var(--muted); margin: 0; }
+
+/* ───── Footer ───── */
+footer {
+  padding: var(--gap-5) 0;
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+footer h4 { font-size: var(--t-sm); font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+footer ul { columns: 2; column-gap: 32px; margin: 0; padding-left: 1em; }
+@media (max-width: 640px) { footer ul { columns: 1; } }
+
+/* ───── Print ───── */
+@media print {
+  nav.tabs { display: none; }
+  .panel[hidden] { display: block !important; break-before: page; }
+  .panel { border: 0; padding: 0; margin-bottom: 2rem; }
+  body { background: white; }
+}
+
+/* ───── Focus ───── */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+<header class="hero">
+  <div class="kicker">Venture Brief · Pondicherry · Prepared 2026-04-23</div>
+  <h1>The Halt at <em>Pondy</em></h1>
+  <p class="deck">A highway-adjacent weighbridge, coffee shop, and EV charging hub on the outskirts of Pondicherry — built father-and-son, sized from first principles, stress-tested by a nine-expert panel.</p>
+  <div class="meta">
+    <span><strong>Ajay Narasimmamoorthy</strong>with Father</span>
+    <span><strong>Puducherry UT</strong>NH-32 corridor</span>
+    <span><strong>Target plot</strong>0.65–0.75 acre</span>
+    <span><strong>Capex envelope</strong>₹2.0–2.3 Cr</span>
+  </div>
+</header>
+</div>
+
+<section class="verdict">
+  <div class="shell">
+    <div class="inner">
+      <span class="badge warn">Conditional GO</span>
+      <h2>Reframe as a <em>land-appreciation play</em> carried by three operating businesses that cover the holding cost — not three businesses standing on their own.</h2>
+    </div>
+  </div>
+</section>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="shell tabs-inner" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="p-overview" id="t-overview">01 · Overview</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-location" id="t-location">02 · Location</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-weighbridge" id="t-weighbridge">03 · Weighbridge</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-ev" id="t-ev">04 · EV Charging</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-coffee" id="t-coffee">05 · Coffee Shop</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-site" id="t-site">06 · Site Plan</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-panel" id="t-panel">07 · Panel</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-diligence" id="t-diligence">08 · Diligence</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-financials" id="t-financials">09 · Financials</button>
+  </div>
+</nav>
+
+<main class="shell">
+
+<!-- 01 OVERVIEW -->
+<section class="panel" id="p-overview" role="tabpanel" aria-labelledby="t-overview">
+  <div class="eyebrow">01</div>
+  <h2>The three answers, at a glance.</h2>
+  <p class="lead">You asked three questions. These are the short answers — each section below explains why.</p>
+
+  <div class="grid-3">
+    <div class="card">
+      <span class="cap">Is it a valid idea?</span>
+      <span class="metric">Conditional GO</span>
+      <p>Not as described. The business only works if the plot has <strong>genuine locational scarcity</strong>, permits <strong>physical segregation</strong> of truck and car forecourts, and has <strong>residual value</strong> if all three businesses fail. The land is the thesis; the businesses pay the rent.</p>
+    </div>
+    <div class="card">
+      <span class="cap">40-ft or 60-ft weighbridge?</span>
+      <span class="metric">60-ft</span>
+      <p><strong>18 m platform, 80-ton, pitless.</strong> A 40-ft deck fits only 2-axle rigids and 14-wheelers — it excludes the multi-axle / 22-wheeler semi-trailers that carry granite, cement, and port containers on this corridor. ₹5 L saved costs ~30–40% of addressable revenue permanently.</p>
+    </div>
+    <div class="card">
+      <span class="cap">How much land?</span>
+      <span class="metric">0.65–0.75 acre</span>
+      <p>~28,000–33,000 sqft. Minimum <strong>~65 m highway frontage</strong> for dual HV/LV access. 0.5 acre only works on a corner plot; 1.0 acre future-proofs EV expansion and gives a better residual exit.</p>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top: var(--gap-3)">
+    <div class="card">
+      <span class="cap">EV charging</span>
+      <span class="metric ink">6 bays</span>
+      <p>4 DC fast + 2 AC slow, pad for 8. Footprint ~260 sqm. <strong>Partner with a named CPO</strong> (Tata Power / Statiq / ChargeZone / Ather) under revenue-share — you are the landlord, not the operator.</p>
+    </div>
+    <div class="card">
+      <span class="cap">Coffee shop</span>
+      <span class="metric ink">1,750 sqft</span>
+      <p>Two-counter format (premium for cars/EVs, trucker side separate), <strong>twin restroom blocks</strong>. On Indian highways, clean restrooms are the single biggest differentiator — not the coffee.</p>
+    </div>
+    <div class="card">
+      <span class="cap">Top location</span>
+      <span class="metric ink">NH-32 NW</span>
+      <p>Madagadipet / Mannadipet stretch near the UT–TN border. Named UT check post = captive demand. Inside PY UT = cleaner licensing. Full multi-axle traffic. 12–18 km from Pondy town.</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="callout">
+    <span class="tag">Panel's reframe</span>
+    <p>Drucker, Christensen, Godin, and Doumont all flag the same structural problem: three jobs, three customers, three dwell times — three half-built things unless segregation is designed in. Taleb and Kim &amp; Mauborgne rescue it if the land has residual use and the forecourts physically separate. Read <a href="#" onclick="showTab('panel');return false;">Section 07 — Panel</a>.</p>
+  </div>
+</section>
+
+<!-- 02 LOCATION -->
+<section class="panel" id="p-location" role="tabpanel" aria-labelledby="t-location" hidden>
+  <div class="eyebrow">02</div>
+  <h2>Location is 70% of the outcome.</h2>
+  <p class="lead">None of the three locations you named is the top pick. The moat — Porter's locational scarcity — lives at the named <strong>UT–TN border check posts</strong>. Trucks slow there anyway.</p>
+
+  <figure class="drawing">
+    <svg viewBox="0 0 680 380" role="img" aria-label="Pondicherry region corridor map with candidate locations">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a6b4a"/></marker>
+      </defs>
+      <rect width="680" height="380" fill="#fbf8f2"/>
+      <!-- coastline -->
+      <path d="M660,0 Q640,80 630,160 T620,380" fill="none" stroke="#c8d6e0" stroke-width="8" stroke-linecap="round"/>
+      <text x="635" y="30" font-family="ui-monospace" font-size="10" fill="#6b8aa0">Bay of Bengal</text>
+
+      <!-- Pondy city -->
+      <circle cx="540" cy="200" r="18" fill="#e8dcc0" stroke="#7a5a3a" stroke-width="1.5"/>
+      <text x="540" y="205" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#2a1f10">PONDY</text>
+
+      <!-- NH-32 NW to Villupuram -->
+      <line x1="540" y1="200" x2="120" y2="80" stroke="#5a5a5a" stroke-width="3"/>
+      <text x="290" y="125" font-family="ui-monospace" font-size="10" fill="#444" transform="rotate(-16 290 125)">NH-32 NW → Villupuram → Chennai</text>
+
+      <!-- NH-32 SE to Cuddalore -->
+      <line x1="540" y1="200" x2="480" y2="340" stroke="#5a5a5a" stroke-width="3"/>
+      <text x="395" y="320" font-family="ui-monospace" font-size="10" fill="#444" transform="rotate(60 395 320)">NH-32 SE → Cuddalore</text>
+
+      <!-- NH-332 to Tindivanam -->
+      <line x1="540" y1="200" x2="180" y2="220" stroke="#7a7a7a" stroke-width="2.5" stroke-dasharray="6,3"/>
+      <text x="300" y="212" font-family="ui-monospace" font-size="10" fill="#555">NH-332 W → Tindivanam</text>
+
+      <!-- ECR -->
+      <line x1="540" y1="200" x2="580" y2="30" stroke="#8a9aa5" stroke-width="2" stroke-dasharray="4,3"/>
+      <text x="558" y="60" font-family="ui-monospace" font-size="10" fill="#6b8aa0" transform="rotate(-75 558 60)">ECR (tourist)</text>
+
+      <!-- Candidate 1 - Madagadipet (TOP PICK) -->
+      <circle cx="395" cy="145" r="11" fill="#c25a2c" stroke="#fff" stroke-width="2"/>
+      <text x="395" y="149" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#fff" font-weight="bold">1</text>
+      <text x="395" y="130" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#2a1f10" font-weight="600">Madagadipet ★</text>
+      <text x="395" y="168" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#666">UT check post</text>
+
+      <!-- Candidate - Thirubuvanai -->
+      <circle cx="460" cy="175" r="8" fill="#9a7a5a" stroke="#fff" stroke-width="2"/>
+      <text x="460" y="178" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">4</text>
+      <text x="460" y="164" text-anchor="end" font-family="Georgia, serif" font-size="10" fill="#444">Thirubuvanai</text>
+
+      <!-- Candidate - Kirumampakkam / Bahour -->
+      <circle cx="512" cy="265" r="10" fill="#9a7a5a" stroke="#fff" stroke-width="2"/>
+      <text x="512" y="268" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">3</text>
+      <text x="545" y="262" text-anchor="start" font-family="Georgia, serif" font-size="11" fill="#2a1f10">Kirumampakkam</text>
+      <text x="545" y="275" text-anchor="start" font-family="ui-monospace" font-size="9" fill="#666">(Bahour, NH-32 SE)</text>
+
+      <!-- Candidate - Kanniakoil -->
+      <circle cx="498" cy="305" r="9" fill="#9a7a5a" stroke="#fff" stroke-width="2"/>
+      <text x="498" y="308" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">2</text>
+      <text x="465" y="302" text-anchor="end" font-family="Georgia, serif" font-size="10" fill="#444">Kanniakoil</text>
+      <text x="465" y="315" text-anchor="end" font-family="ui-monospace" font-size="9" fill="#666">UT check post</text>
+
+      <!-- Candidate - Valudhavur -->
+      <circle cx="355" cy="220" r="8" fill="#8a8a8a" stroke="#fff" stroke-width="2"/>
+      <text x="355" y="223" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">5</text>
+      <text x="355" y="244" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#444">Valudhavur</text>
+
+      <!-- Candidate - Tindivanam -->
+      <circle cx="170" cy="215" r="8" fill="#8a8a8a" stroke="#fff" stroke-width="2"/>
+      <text x="170" y="240" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#444">Tindivanam</text>
+      <text x="170" y="253" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#888">(TN jurisdiction)</text>
+
+      <!-- Kilambakkam flag -->
+      <circle cx="85" cy="40" r="8" fill="#ccc" stroke="#999" stroke-width="1.5"/>
+      <text x="85" y="43" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#666">✕</text>
+      <text x="85" y="62" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#888">Kilambakkam</text>
+      <text x="85" y="74" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#aaa">(Chennai, 120km — drop)</text>
+      <line x1="120" y1="80" x2="85" y2="45" stroke="#ccc" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+
+      <!-- UT-TN border suggestion -->
+      <path d="M 360 130 Q 380 160 420 190 Q 440 230 430 300" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="4,4" fill="none"/>
+      <text x="340" y="105" font-family="ui-monospace" font-size="9" fill="#a07a4a">PY UT border</text>
+
+      <!-- Legend -->
+      <g transform="translate(30, 310)">
+        <rect x="0" y="0" width="170" height="56" fill="#fff" stroke="#ddd"/>
+        <text x="10" y="14" font-family="ui-monospace" font-size="9" fill="#444" font-weight="bold">LEGEND</text>
+        <circle cx="18" cy="28" r="5" fill="#c25a2c"/><text x="30" y="31" font-family="ui-monospace" font-size="9" fill="#333">Top pick</text>
+        <circle cx="18" cy="44" r="5" fill="#9a7a5a"/><text x="30" y="47" font-family="ui-monospace" font-size="9" fill="#333">Solid candidate</text>
+        <circle cx="96" cy="28" r="5" fill="#8a8a8a"/><text x="108" y="31" font-family="ui-monospace" font-size="9" fill="#333">Lower priority</text>
+        <circle cx="96" cy="44" r="4" fill="#ccc" stroke="#999"/><text x="108" y="47" font-family="ui-monospace" font-size="9" fill="#333">Drop</text>
+      </g>
+    </svg>
+    <figcaption>Corridor map — candidate plots around Pondicherry. Not to scale. Check-post scarcity lives at the UT–TN border.</figcaption>
+  </figure>
+
+  <h3>Candidate scorecard</h3>
+  <p>Weighted across 10 panel criteria. Higher is better. Top pick marked.</p>
+  <table>
+    <thead><tr>
+      <th>Rank</th><th>Location</th><th>Corridor</th><th>Jurisdiction</th><th class="num">Score</th><th>Key reason</th>
+    </tr></thead>
+    <tbody>
+      <tr class="highlight">
+        <td class="rank">★ 1</td>
+        <td>Madagadipet / Mannadipet</td>
+        <td>NH-32 NW (UT–TN border)</td>
+        <td>Puducherry UT</td>
+        <td class="num">45</td>
+        <td>Named UT check post = captive demand + weekend Chennai–Pondy flow</td>
+      </tr>
+      <tr>
+        <td class="rank">2</td>
+        <td>Kanniakoil / Thirukannur</td>
+        <td>NH-32 S (UT border)</td>
+        <td>Puducherry UT</td>
+        <td class="num">40</td>
+        <td>Same check-post logic, south side, slightly less car flow</td>
+      </tr>
+      <tr>
+        <td class="rank">3</td>
+        <td>Kirumampakkam / Bahour</td>
+        <td>NH-32 SE</td>
+        <td>Puducherry UT</td>
+        <td class="num">39</td>
+        <td>Granite/cement/SIPCOT mix, cheaper land, but Cuddalore cluster competes</td>
+      </tr>
+      <tr>
+        <td class="rank">4</td>
+        <td>Thirubuvanai</td>
+        <td>NH-32 NW (inland)</td>
+        <td>Puducherry UT</td>
+        <td class="num">39</td>
+        <td>Good, but push 5 km further to the border for check-post scarcity</td>
+      </tr>
+      <tr>
+        <td class="rank">5</td>
+        <td>Valudhavur</td>
+        <td>NH-332 W</td>
+        <td>UT/TN mixed</td>
+        <td class="num">31</td>
+        <td>Bangalore freight = premium trucks, but weak weekend flow</td>
+      </tr>
+      <tr>
+        <td class="rank">6</td>
+        <td>Tindivanam Highway</td>
+        <td>NH-332/NH-38 jn</td>
+        <td>Tamil Nadu</td>
+        <td class="num">26</td>
+        <td>40 km commute, TN jurisdiction, mature competition</td>
+      </tr>
+      <tr>
+        <td class="rank">✕</td>
+        <td>Kilambakkam</td>
+        <td>GST Rd, Chennai</td>
+        <td>Tamil Nadu</td>
+        <td class="num">—</td>
+        <td>120 km from Pondy. Wrong market. If you meant <em>Kirumampakkam</em>, see row 3.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <span class="tag">Hidden risk on NH-32 NW</span>
+    <p>A ₹436 Cr elevated corridor is planned on NH-32 to ease Pondy congestion. If the alignment runs at grade through your stretch, ground-level access disappears. <strong>Get the NHAI PIU Puducherry alignment map before any advance.</strong></p>
+  </div>
+
+  <h4>What to do this month</h4>
+  <ol>
+    <li>Get the NHAI PIU Puducherry alignment map for the elevated corridor project.</li>
+    <li>Drive NH-32 NW from Villianur to the TN border twice — weekday mid-morning and Saturday evening. Count trucks, cars, and existing weighbridges.</li>
+    <li>Drive NH-32 SE from Ariyankuppam to Cuddalore on the same pattern.</li>
+    <li>Visit Madagadipet check post at peak hours. Observe truck stop-rate.</li>
+    <li>Shortlist three plots (one per corridor) and run a 4-week manual count on each.</li>
+    <li>Pitch Statiq (or Tata Power) with all three shortlisted plots. Let the CPO tell you which one they'd commit to under revenue-share.</li>
+  </ol>
+</section>
+
+<!-- 03 WEIGHBRIDGE -->
+<section class="panel" id="p-weighbridge" role="tabpanel" aria-labelledby="t-weighbridge" hidden>
+  <div class="eyebrow">03</div>
+  <h2>60 feet. Pitless. Back of the plot.</h2>
+  <p class="lead">A Karpathy-style loop over four rounds — hypothesize, check against data, refine. The 40-ft case loses on truck mix and capital efficiency once you include multi-axle traffic.</p>
+
+  <figure class="drawing">
+    <svg viewBox="0 0 700 220" role="img" aria-label="60-foot weighbridge layout with approach ramps, cabin, and queue">
+      <rect width="700" height="220" fill="#fbf8f2"/>
+      <!-- highway reference -->
+      <rect x="0" y="10" width="700" height="14" fill="#d8d4cc"/>
+      <text x="8" y="21" font-family="ui-monospace" font-size="9" fill="#666">NH-32 service road →</text>
+
+      <!-- HV entry arrow -->
+      <path d="M 60 30 L 60 60" stroke="#8a6b4a" stroke-width="2" marker-end="url(#arr2)"/>
+      <defs><marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a6b4a"/></marker></defs>
+      <text x="70" y="50" font-family="ui-monospace" font-size="9" fill="#555">HV entry</text>
+
+      <!-- Queue lane -->
+      <rect x="80" y="70" width="130" height="70" fill="#efe8d9" stroke="#c8b892"/>
+      <text x="145" y="92" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#3a2a14" font-weight="600">Queue lane</text>
+      <text x="145" y="107" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#666">2 trucks · 40m</text>
+      <rect x="90" y="115" width="55" height="18" fill="#c8a068" stroke="#8a6b4a"/>
+      <rect x="150" y="115" width="55" height="18" fill="#c8a068" stroke="#8a6b4a"/>
+
+      <!-- Approach ramp -->
+      <polygon points="210,80 240,80 245,120 205,120" fill="#e2d6b5"/>
+      <text x="225" y="135" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#555">ramp 15m</text>
+
+      <!-- PLATFORM -->
+      <rect x="245" y="70" width="240" height="60" fill="#c25a2c" stroke="#8a3e1a" stroke-width="2"/>
+      <text x="365" y="96" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#fff" font-weight="600">60-ft WEIGHBRIDGE PLATFORM</text>
+      <text x="365" y="114" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#fff">18m × 3.4m · 80-ton capacity · pitless</text>
+      <!-- load cell marks -->
+      <g fill="#fff">
+        <circle cx="265" cy="100" r="3"/><circle cx="310" cy="100" r="3"/><circle cx="365" cy="100" r="3"/><circle cx="420" cy="100" r="3"/><circle cx="465" cy="100" r="3"/>
+      </g>
+
+      <!-- Departure ramp -->
+      <polygon points="485,80 515,80 525,120 485,120" fill="#e2d6b5"/>
+      <text x="505" y="135" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#555">ramp 15m</text>
+
+      <!-- Cabin -->
+      <rect x="245" y="155" width="90" height="40" fill="#8a6b4a" stroke="#5a3e1a"/>
+      <text x="290" y="172" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#fff" font-weight="600">Weigh cabin</text>
+      <text x="290" y="187" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#f0e4c8">3×4m · POS · CCTV</text>
+
+      <!-- Bypass lane -->
+      <rect x="80" y="160" width="130" height="28" fill="#f4eddd" stroke="#c8b892" stroke-dasharray="3,2"/>
+      <text x="145" y="178" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#666">bypass lane</text>
+
+      <!-- Turnaround apron -->
+      <rect x="525" y="70" width="155" height="140" fill="#eae2cf" stroke="#c8b892"/>
+      <text x="602" y="135" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#3a2a14" font-weight="600">Turnaround</text>
+      <text x="602" y="150" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#666">maneuver apron</text>
+      <path d="M 545 185 Q 600 200 655 175" stroke="#8a6b4a" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+    </svg>
+    <figcaption>Weighbridge zone, plan view. Total ~800 sqm including queue, ramps, cabin, bypass, and turnaround apron.</figcaption>
+  </figure>
+
+  <h3>The four rounds</h3>
+  <div class="rounds">
+    <div class="round">
+      <h4>Baseline hypothesis: 40-ft is enough</h4>
+      <p>A 12 m platform (~40 ft) fits 2-axle rigids and 14-wheelers. Smaller pad, smaller capex, faster payback on paper.</p>
+    </div>
+    <div class="round">
+      <h4>Truck mix reality check</h4>
+      <p>The Cuddalore–Chennai corridor runs granite, cement, port containers, SIPCOT pharma. ~40% of trucks are multi-axle semi-trailers. 40-ft excludes them permanently. ₹5 L saved costs ~30–40% of revenue.</p>
+    </div>
+    <div class="round">
+      <h4>Queuing + turnaround geometry</h4>
+      <p>Platform (18 m × 3.4 m) + two 15 m ramps + 4 m cabin + 2-truck queue lane + turnaround apron + bypass = <strong>~800 sqm</strong>. Three times a naive "platform only" estimate.</p>
+    </div>
+    <div class="round">
+      <h4>Panel constraint: physical segregation</h4>
+      <p>Back-of-plot position with separate highway access for heavy vehicles. 5 m planted berm between HV and LV forecourts. Implies ~65 m highway frontage for two cuts 40 m apart.</p>
+    </div>
+  </div>
+
+  <h3>Specification</h3>
+  <table>
+    <tbody>
+      <tr><td>Platform length</td><td><strong>60 ft / 18 m</strong></td></tr>
+      <tr><td>Platform width</td><td>3.4 m</td></tr>
+      <tr><td>Capacity</td><td>80-ton (step up to 100-ton only if local data shows regular overloads)</td></tr>
+      <tr><td>Construction</td><td>Pitless — faster install, no water-logging, easier maintenance</td></tr>
+      <tr><td>Position</td><td>Back of plot, dedicated HV entry segregated from hospitality forecourt</td></tr>
+      <tr><td>Zone footprint</td><td>~800 sqm / 8,660 sqft</td></tr>
+      <tr><td>Turnkey capex</td><td>₹22 L (hardware + civil + cabin + software + licence) + ₹3 L segregation works</td></tr>
+      <tr><td>Regulator</td><td>Dy Controller (Legal Metrology), Govt of Puducherry · Legal Metrology Act 2009</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <span class="tag">The assumption most likely to break this</span>
+    <p>Local weighbridge saturation. If 3–4 weighbridges within 8 km already run at &lt; 40% utilization, your demand collapses. Diligence Q2 (visit each, pay for a weighment, observe) is non-negotiable before land purchase.</p>
+  </div>
+</section>
+
+<!-- 04 EV -->
+<section class="panel" id="p-ev" role="tabpanel" aria-labelledby="t-ev" hidden>
+  <div class="eyebrow">04</div>
+  <h2>Six bays. Landlord, not operator.</h2>
+  <p class="lead">You do not self-operate EV chargers — you host a named CPO under revenue-share. Your capex is civil + HT line + transformer pad. The CPO funds the chargers, owns the app, owns the customer.</p>
+
+  <figure class="drawing">
+    <svg viewBox="0 0 560 260" role="img" aria-label="EV charging zone layout — 4 DC fast and 2 AC slow bays plus transformer pad">
+      <rect width="560" height="260" fill="#fbf8f2"/>
+
+      <!-- LV drive aisle -->
+      <rect x="20" y="110" width="520" height="40" fill="#e8e1cc"/>
+      <text x="40" y="135" font-family="ui-monospace" font-size="10" fill="#666">Drive aisle →</text>
+
+      <!-- DC fast bays ×4 -->
+      <g>
+        <rect x="40" y="30" width="70" height="80" fill="#fff" stroke="#c8b892"/>
+        <rect x="40" y="30" width="70" height="12" fill="#c25a2c"/>
+        <text x="75" y="40" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">DC 60kW</text>
+        <rect x="68" y="55" width="14" height="45" fill="#2a2a2a"/>
+        <text x="75" y="105" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#555">Bay 1</text>
+
+        <rect x="120" y="30" width="70" height="80" fill="#fff" stroke="#c8b892"/>
+        <rect x="120" y="30" width="70" height="12" fill="#c25a2c"/>
+        <text x="155" y="40" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">DC 60kW</text>
+        <rect x="148" y="55" width="14" height="45" fill="#2a2a2a"/>
+        <text x="155" y="105" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#555">Bay 2</text>
+
+        <rect x="200" y="30" width="70" height="80" fill="#fff" stroke="#c8b892"/>
+        <rect x="200" y="30" width="70" height="12" fill="#c25a2c"/>
+        <text x="235" y="40" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">DC 60kW</text>
+        <rect x="228" y="55" width="14" height="45" fill="#2a2a2a"/>
+        <text x="235" y="105" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#555">Bay 3</text>
+
+        <rect x="280" y="30" width="70" height="80" fill="#fff" stroke="#c8b892"/>
+        <rect x="280" y="30" width="70" height="12" fill="#c25a2c"/>
+        <text x="315" y="40" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">DC 60kW</text>
+        <rect x="308" y="55" width="14" height="45" fill="#2a2a2a"/>
+        <text x="315" y="105" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#555">Bay 4</text>
+      </g>
+
+      <!-- AC slow ×2 -->
+      <g>
+        <rect x="360" y="30" width="60" height="80" fill="#fff" stroke="#c8b892"/>
+        <rect x="360" y="30" width="60" height="12" fill="#5a8a5a"/>
+        <text x="390" y="40" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">AC 22kW</text>
+        <rect x="383" y="55" width="12" height="45" fill="#2a2a2a"/>
+        <text x="390" y="105" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#555">Bay 5</text>
+
+        <rect x="430" y="30" width="60" height="80" fill="#fff" stroke="#c8b892"/>
+        <rect x="430" y="30" width="60" height="12" fill="#5a8a5a"/>
+        <text x="460" y="40" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#fff">AC 22kW</text>
+        <rect x="453" y="55" width="12" height="45" fill="#2a2a2a"/>
+        <text x="460" y="105" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#555">Bay 6</text>
+      </g>
+
+      <!-- Growth pad -->
+      <rect x="40" y="165" width="150" height="70" fill="#f4eddd" stroke="#c8b892" stroke-dasharray="5,3"/>
+      <text x="115" y="195" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#555">Growth pad</text>
+      <text x="115" y="210" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#888">2 future DC bays</text>
+
+      <!-- Transformer pad -->
+      <rect x="220" y="165" width="120" height="70" fill="#e2d6b5" stroke="#8a6b4a"/>
+      <text x="280" y="190" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#3a2a14" font-weight="600">Transformer pad</text>
+      <text x="280" y="205" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#555">55–75 kVA · HT/LT panel</text>
+      <text x="280" y="220" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#888">fenced · locked</text>
+
+      <!-- CPO pylon -->
+      <rect x="370" y="175" width="120" height="50" fill="#fff" stroke="#c25a2c" stroke-width="1.5"/>
+      <text x="430" y="195" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#c25a2c" font-weight="600">CPO pylon</text>
+      <text x="430" y="210" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#666">Statiq / Tata Power</text>
+    </svg>
+    <figcaption>EV zone, plan view. 4 DC fast + 2 AC slow at go-live. Growth pad pre-trenched for 2 future DC bays. ~260 sqm total.</figcaption>
+  </figure>
+
+  <div class="grid-2">
+    <div class="card">
+      <span class="cap">Bay rationale</span>
+      <h3>Why 6 at go-live</h3>
+      <p>A single 60 kW dual-gun charges one car in ~45 min. Two chargers at peak (Fri–Sun 12–3 pm) saturates immediately. Next-available-charger check in apps drives drivers <em>past</em> undersized stations — they don't return.</p>
+      <ul>
+        <li><strong>4 DC fast bays</strong> — weekday + weekend demand</li>
+        <li><strong>2 AC slow bays</strong> — overnight commercial EVs + visible cheaper tier</li>
+        <li><strong>Pad for 2 more DC</strong> — future-proofs 2030 demand</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="cap">Economics</span>
+      <h3>Landlord, not operator</h3>
+      <p>CPOs fund chargers, own the app and customer. You fund civil, HT line, transformer pad, fencing. Typical revenue-share: <strong>15–25% to landlord</strong> (verify).</p>
+      <ul>
+        <li><strong>Landlord capex</strong> ~₹15 L</li>
+        <li><strong>CPO capex</strong> ~₹25–40 L (they fund)</li>
+        <li><strong>Break-even</strong> requires ~25 sessions/day year 3</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="tag">Panel kill-criterion #4</span>
+    <p>No named CPO (Tata Power, Statiq, ChargeZone, Ather, Jio-bp, Glida) willing to sign a site LOI for your plot <strong>before</strong> land purchase = no EV thesis. If no CPO sees the corridor demand yet, neither should you.</p>
+  </div>
+
+  <h4>Partners to approach, in order</h4>
+  <table>
+    <thead><tr><th>CPO</th><th>Why</th><th>Contact path</th></tr></thead>
+    <tbody>
+      <tr><td>Statiq</td><td>Aggressive on Tier-2 highway sites, signs Tier-3 plots readily</td><td>Partner portal + Bangalore BD team</td></tr>
+      <tr><td>Tata Power EZ Charge</td><td>Largest network (5,500+), co-brand with Tata.ev megachargers</td><td>Commercial partnerships desk</td></tr>
+      <tr><td>ChargeZone</td><td>SuperCharging co-brand with Tata.ev; NH-48 playbook replicable</td><td>Direct enterprise sales</td></tr>
+      <tr><td>Ather Grid</td><td>Two-wheeler beachhead but car chargers now scaling in TN</td><td>Ather partner program</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 05 COFFEE -->
+<section class="panel" id="p-coffee" role="tabpanel" aria-labelledby="t-coffee" hidden>
+  <div class="eyebrow">05</div>
+  <h2>Not a café. A highway rest stop.</h2>
+  <p class="lead">Chaayos is 700 sqft, mall-anchored, no drive-thru. CCD Xpress is 60 sqft — a kiosk. Neither is right. You need a 1,750 sqft two-counter format with <strong>twin restroom blocks</strong>. Restrooms are the real differentiator.</p>
+
+  <div class="grid-2">
+    <div>
+      <h3>Customer mix — and why two counters</h3>
+      <table>
+        <thead><tr><th>Segment</th><th>Dwell</th><th class="num">Ticket</th><th>Primary need</th></tr></thead>
+        <tbody>
+          <tr><td>EV driver (charging)</td><td>40 min</td><td class="num">₹150–400</td><td>Wi-Fi, clean restroom, decent coffee, seating</td></tr>
+          <tr><td>Weekend Chennai–Pondy family</td><td>15–25 min</td><td class="num">₹200–500</td><td>Family-friendly, clean restroom, quick food</td></tr>
+          <tr><td>Trucker</td><td>10–15 min</td><td class="num">₹40–100</td><td>Cheap chai/meal, clean restroom, clean water</td></tr>
+          <tr><td>Local (nearby village)</td><td>variable</td><td class="num">₹50–150</td><td>Affordable, somewhere to go</td></tr>
+        </tbody>
+      </table>
+      <p>Primary customer (Drucker's lens): <strong>EV driver + weekend car family</strong>. Trucker is served through a separate lower-cost counter and separate toilets — consistent with the Godin/Doumont segregation argument.</p>
+    </div>
+    <div>
+      <h3>Zone breakdown</h3>
+      <table>
+        <thead><tr><th>Zone</th><th class="num">sqft</th></tr></thead>
+        <tbody>
+          <tr><td>Kitchen (prep · grill · cold · storage)</td><td class="num">300</td></tr>
+          <tr><td>Counter / POS (dual: premium + trucker)</td><td class="num">150</td></tr>
+          <tr><td>Indoor AC seating · 16 covers</td><td class="num">400</td></tr>
+          <tr><td>Outdoor covered seating · 16 covers</td><td class="num">400</td></tr>
+          <tr><td><strong>Premium restroom block</strong> (M/F/accessible)</td><td class="num">180</td></tr>
+          <tr><td><strong>Trucker restroom block</strong> (separate)</td><td class="num">120</td></tr>
+          <tr><td>Back-of-house / staff</td><td class="num">100</td></tr>
+          <tr><td>Utility (water · DG · cylinders)</td><td class="num">100</td></tr>
+          <tr class="highlight"><td>Total building footprint</td><td class="num">1,750</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="tag">The integration play</span>
+    <p>Don't convert passers-by — <strong>monetize EV dwell time</strong>. A charging driver is stuck on site for 40 minutes. Walk them to a premium restroom + decent coffee + Wi-Fi and they will spend ₹250 they wouldn't have. This shifts F&amp;B break-even from "stop-rate × spend" to "captive-session × spend".</p>
+  </div>
+
+  <h4>Build budget</h4>
+  <table>
+    <tbody>
+      <tr><td>Building construction (mid-quality finish)</td><td class="num">₹15–25 L</td></tr>
+      <tr><td>Kitchen equipment (commercial)</td><td class="num">₹6–10 L</td></tr>
+      <tr><td>Restroom fit-out (premium + trucker blocks)</td><td class="num">₹4–6 L</td></tr>
+      <tr><td>Furniture + signage + first-fill inventory</td><td class="num">₹3–5 L</td></tr>
+      <tr class="highlight"><td><strong>Total</strong></td><td class="num"><strong>₹28–46 L</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 06 SITE PLAN -->
+<section class="panel" id="p-site" role="tabpanel" aria-labelledby="t-site" hidden>
+  <div class="eyebrow">06</div>
+  <h2>One plot. Two forecourts. One berm between them.</h2>
+  <p class="lead">The panel's non-negotiable: physical segregation of heavy-vehicle and light-vehicle traffic. Two highway access points. A 5 m planted berm. The hospitality side is what weekend drivers and EV customers see; the weighbridge side is what truckers see. Different brands on the same land.</p>
+
+  <figure class="drawing">
+    <svg viewBox="0 0 900 520" role="img" aria-label="Top-down site plan for expected 0.75 acre case">
+      <rect width="900" height="520" fill="#fbf8f2"/>
+
+      <!-- Highway -->
+      <rect x="0" y="0" width="900" height="46" fill="#5a5a5a"/>
+      <line x1="0" y1="23" x2="900" y2="23" stroke="#fff" stroke-width="1" stroke-dasharray="18,10"/>
+      <text x="16" y="28" font-family="ui-monospace" font-size="10" fill="#fff">NH-32 · Villupuram-bound</text>
+      <text x="880" y="28" text-anchor="end" font-family="ui-monospace" font-size="10" fill="#fff">→ Pondy ·</text>
+
+      <!-- Setback strip -->
+      <rect x="0" y="46" width="900" height="38" fill="#ece3d0"/>
+      <text x="16" y="68" font-family="ui-monospace" font-size="9" fill="#8a6b4a">NHAI setback · 7.5 m from boundary · landscaping + pylon signage only</text>
+
+      <!-- Access cuts -->
+      <rect x="60" y="46" width="80" height="38" fill="#c8b892"/>
+      <text x="100" y="70" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#fff">LV ENTRY</text>
+
+      <rect x="760" y="46" width="80" height="38" fill="#c8b892"/>
+      <text x="800" y="70" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#fff">HV ENTRY</text>
+
+      <!-- Plot boundary -->
+      <rect x="20" y="84" width="860" height="420" fill="none" stroke="#8a6b4a" stroke-width="2" stroke-dasharray="8,4"/>
+
+      <!-- LV forecourt label -->
+      <text x="220" y="106" font-family="Georgia, serif" font-size="13" fill="#3a2a14" font-style="italic">Light-vehicle forecourt · "The Halt"</text>
+
+      <!-- LV — parking row -->
+      <g>
+        <rect x="40" y="130" width="300" height="50" fill="#f4eddd" stroke="#c8b892"/>
+        <text x="190" y="160" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#3a2a14">Car / EV parking · 8–10 slots</text>
+        <g fill="#c8a068" stroke="#8a6b4a">
+          <rect x="50" y="140" width="32" height="32"/><rect x="90" y="140" width="32" height="32"/><rect x="130" y="140" width="32" height="32"/><rect x="170" y="140" width="32" height="32"/><rect x="210" y="140" width="32" height="32"/><rect x="250" y="140" width="32" height="32"/><rect x="290" y="140" width="32" height="32"/>
+        </g>
+      </g>
+
+      <!-- EV bays -->
+      <g>
+        <rect x="40" y="195" width="300" height="70" fill="#fff" stroke="#c25a2c" stroke-width="1.5"/>
+        <rect x="40" y="195" width="300" height="14" fill="#c25a2c"/>
+        <text x="190" y="205" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#fff">EV CHARGING · 4 DC + 2 AC</text>
+        <g fill="#2a2a2a"><rect x="55" y="215" width="8" height="38"/><rect x="100" y="215" width="8" height="38"/><rect x="145" y="215" width="8" height="38"/><rect x="190" y="215" width="8" height="38"/><rect x="235" y="215" width="6" height="38" fill="#5a8a5a"/><rect x="280" y="215" width="6" height="38" fill="#5a8a5a"/></g>
+      </g>
+
+      <!-- Coffee building -->
+      <g>
+        <rect x="40" y="285" width="300" height="180" fill="#fff" stroke="#8a6b4a" stroke-width="1.5"/>
+        <text x="190" y="310" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#3a2a14" font-weight="600">Coffee shop · 1,750 sqft</text>
+        <!-- internal rooms -->
+        <rect x="52" y="325" width="90" height="60" fill="#f4eddd" stroke="#c8b892"/><text x="97" y="360" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#555">Kitchen</text>
+        <rect x="150" y="325" width="180" height="60" fill="#faf5e8" stroke="#c8b892"/><text x="240" y="360" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#555">Indoor seating · 16 covers</text>
+        <rect x="52" y="395" width="140" height="60" fill="#e2eadb" stroke="#8aa88a"/><text x="122" y="430" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#3a5a3a">Premium restroom</text>
+        <rect x="200" y="395" width="130" height="60" fill="#faf5e8" stroke="#c8b892"/><text x="265" y="430" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#555">Counter · POS</text>
+      </g>
+
+      <!-- Outdoor seating -->
+      <rect x="40" y="475" width="300" height="24" fill="#eae2cf" stroke="#c8b892"/>
+      <text x="190" y="491" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#666">Outdoor covered seating · 16 covers</text>
+
+      <!-- Segregation berm -->
+      <rect x="360" y="100" width="30" height="400" fill="#8aa07a"/>
+      <text x="375" y="300" transform="rotate(-90 375 300)" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#fff">5 m planted berm · segregation</text>
+
+      <!-- HV forecourt -->
+      <text x="560" y="106" font-family="Georgia, serif" font-size="13" fill="#3a2a14" font-style="italic">Heavy-vehicle forecourt · industrial service</text>
+
+      <!-- HV queue -->
+      <rect x="410" y="130" width="440" height="60" fill="#efe8d9" stroke="#c8b892"/>
+      <text x="630" y="155" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#3a2a14">Queue lane · 2 trucks</text>
+      <g fill="#c8a068" stroke="#8a6b4a"><rect x="430" y="160" width="90" height="20"/><rect x="540" y="160" width="90" height="20"/></g>
+
+      <!-- Weighbridge -->
+      <polygon points="410,210 440,210 445,230 410,230" fill="#e2d6b5"/>
+      <rect x="445" y="200" width="320" height="45" fill="#c25a2c" stroke="#8a3e1a" stroke-width="2"/>
+      <text x="605" y="222" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#fff" font-weight="600">60-ft WEIGHBRIDGE · 18 m · 80-ton</text>
+      <text x="605" y="238" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#fff">pitless · 5 load cells</text>
+      <polygon points="765,210 790,210 795,230 765,230" fill="#e2d6b5"/>
+
+      <!-- Weigh cabin -->
+      <rect x="445" y="260" width="100" height="60" fill="#8a6b4a" stroke="#5a3e1a"/>
+      <text x="495" y="285" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#fff" font-weight="600">Weigh cabin</text>
+      <text x="495" y="303" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#f0e4c8">3×4 m · POS · CCTV</text>
+
+      <!-- Bypass -->
+      <rect x="410" y="255" width="30" height="75" fill="#f4eddd" stroke="#c8b892" stroke-dasharray="3,2"/>
+      <text x="425" y="295" transform="rotate(-90 425 295)" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#666">bypass</text>
+
+      <!-- Trucker restroom -->
+      <rect x="570" y="260" width="110" height="60" fill="#e2eadb" stroke="#8aa88a"/>
+      <text x="625" y="285" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#3a5a3a">Trucker restroom</text>
+      <text x="625" y="300" text-anchor="middle" font-family="ui-monospace" font-size="8" fill="#5a7a5a">(separate block)</text>
+
+      <!-- Truck turnaround apron -->
+      <rect x="410" y="340" width="440" height="150" fill="#eae2cf" stroke="#c8b892"/>
+      <text x="630" y="410" text-anchor="middle" font-family="Georgia, serif" font-size="12" fill="#3a2a14">Truck turnaround apron</text>
+      <text x="630" y="428" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#555">maneuver + pull-out · ~15 m swept path</text>
+      <path d="M 450 470 Q 630 475 820 460" stroke="#8a6b4a" stroke-width="2" fill="none" marker-end="url(#arr3)"/>
+      <defs><marker id="arr3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a6b4a"/></marker></defs>
+
+      <!-- Scale -->
+      <g transform="translate(740, 500)">
+        <line x1="0" y1="0" x2="80" y2="0" stroke="#444" stroke-width="2"/>
+        <line x1="0" y1="-4" x2="0" y2="4" stroke="#444" stroke-width="2"/>
+        <line x1="80" y1="-4" x2="80" y2="4" stroke="#444" stroke-width="2"/>
+        <text x="40" y="15" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#444">≈ 15 m</text>
+      </g>
+    </svg>
+    <figcaption>Expected-case site plan · 0.75 acre · dual highway access · 5 m planted berm segregating LV and HV forecourts.</figcaption>
+    <div class="legend">
+      <span><i style="background:#c25a2c"></i>Weighbridge + EV hardware</span>
+      <span><i style="background:#8a6b4a"></i>Cabin / service structures</span>
+      <span><i style="background:#8aa07a"></i>Segregation berm</span>
+      <span><i style="background:#c8a068"></i>Vehicles / parking</span>
+      <span><i style="background:#e2eadb;border:1px solid #8aa88a"></i>Restrooms</span>
+      <span><i style="background:#eae2cf"></i>Circulation / apron</span>
+    </div>
+  </figure>
+
+  <h3>Low / Expected / High</h3>
+  <table>
+    <thead><tr><th>Case</th><th>Land</th><th>sqft</th><th>Best for</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Low</td>
+        <td>0.5 acre</td>
+        <td class="num">~21,780</td>
+        <td>Only viable on a corner/T-junction plot with natural dual access. 40-ft weighbridge only. 4 EV bays. Smaller café.</td>
+      </tr>
+      <tr class="highlight">
+        <td><strong>Expected</strong></td>
+        <td><strong>0.65–0.75 acre</strong></td>
+        <td class="num"><strong>~28,300–32,670</strong></td>
+        <td>60-ft weighbridge back-of-plot · 6 EV bays + growth pad · 1,750 sqft café with twin restrooms · ~65 m highway frontage for dual access.</td>
+      </tr>
+      <tr>
+        <td>High</td>
+        <td>1.0 acre</td>
+        <td class="num">~43,560</td>
+        <td>Future-proofs 2030 EV demand (8 bays, pad for 12). Better residual exit as godown or petrol-pump site if venture fails.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 07 PANEL -->
+<section class="panel" id="p-panel" role="tabpanel" aria-labelledby="t-panel" hidden>
+  <div class="eyebrow">07</div>
+  <h2>Nine experts. One conditional yes.</h2>
+  <p class="lead">Sequential reads, then a debate round on disagreements, then synthesis. Each expert stated a verdict and one assumption that must hold. The disagreement that matters most: <strong>is this one business or three?</strong></p>
+
+  <div class="experts">
+    <article class="expert"><div class="who">Clayton Christensen</div><span class="lens">Jobs-to-be-Done · <strong style="color:var(--warn)">CAUTION</strong></span><p class="quote">Three jobs for three customers with three dwell times. Trucker won't buy your ₹180 cappuccino. The EV driver won't share brake-dust forecourt with 30 trucks.</p><p class="assume">The weighbridge must be a land anchor, not a brand repellent.</p></article>
+
+    <article class="expert"><div class="who">Michael Porter</div><span class="lens">Five Forces · <strong style="color:var(--warn)">CAUTION</strong></span><p class="quote">Low-moat businesses. CPO owns the EV customer. Weighbridge is a concrete pad any petrol pump can replicate. RFID e-weighment is a 10-year substitute.</p><p class="assume">You have genuinely scarce land — corner plot, check post, or 15 km charging gap.</p></article>
+
+    <article class="expert"><div class="who">Peter Drucker</div><span class="lens">Customer · <strong style="color:var(--warn)">CAUTION</strong></span><p class="quote">You described three activities, not a business. Who is the one customer you would walk away from a weighbridge sale to keep?</p><p class="assume">Father and son agree, <em>in writing</em>, on the primary customer before the land is bought.</p></article>
+
+    <article class="expert"><div class="who">Seth Godin</div><span class="lens">Tribe / Story · <strong style="color:var(--stop)">NO-GO</strong></span><p class="quote">"Weighbridge + coffee + charger" is a list, not a narrative. Nobody tells a friend "you have to stop at that weighbridge." The remarkable version is a named destination with a face.</p><p class="assume">One of you is the named proprietor, with a point of view.</p></article>
+
+    <article class="expert"><div class="who">Kim &amp; Mauborgne</div><span class="lens">Blue Ocean · <strong style="color:var(--ok)">GO (conditional)</strong></span><p class="quote">Underserved pain is common across all three customers: hygiene, safety, trust. ERRC reshapes this into a clean-highway-stop category that doesn't exist on the Pondy corridor.</p><p class="assume">You can execute hospitality-grade ops in a rural labour market for 10 years.</p></article>
+
+    <article class="expert"><div class="who">Jim Collins</div><span class="lens">Hedgehog · <strong style="color:var(--warn)">CAUTION</strong></span><p class="quote">What can you be best at? Not weighbridges. Not coffee. Possibly: the best-run highway hospitality stop on the Chennai–Pondy–Cuddalore triangle. That is defensible if execution is relentless.</p><p class="assume">You will shut any of the three lines within 24 months if it fails to clear its cost of capital.</p></article>
+
+    <article class="expert"><div class="who">Nassim Taleb</div><span class="lens">Antifragility · <strong style="color:var(--ok)">GO (structural)</strong></span><p class="quote">The land is the thesis. Three streams are a barbell: weighbridge = low-variance cash, EV = long call option on adoption, coffee = volatile middle. Tail risks: highway re-alignment, charger fire, RTO licence gating.</p><p class="assume">Residual land value stands even if all three businesses fail.</p></article>
+
+    <article class="expert"><div class="who">Donella Meadows</div><span class="lens">Systems · <strong style="color:var(--warn)">CAUTION</strong></span><p class="quote">Your primary input — highway traffic volume at this specific 2 km — is exogenous, political, and outside your control. Three businesses, three exogenous systems.</p><p class="assume">You have modelled the 10-year traffic scenario with NHAI master-plan data, not vibes from the current road.</p></article>
+
+    <article class="expert"><div class="who">Jean-luc Doumont</div><span class="lens">Communication · <strong style="color:var(--stop)">NO-GO as conceived</strong></span><p class="quote">At 60 km/h a driver has 4 seconds and 100 m. Three-message signage rejects all three audiences. Architectural fix: two entrances, two signage systems, possibly two names.</p><p class="assume">Plot is ≥ 0.75 acre to permit physical HV/LV separation.</p></article>
+  </div>
+
+  <hr>
+  <h3>Synthesis</h3>
+  <div class="grid-2">
+    <div>
+      <h4>Convergent signals</h4>
+      <ul>
+        <li>Land selection is 70% of the outcome.</li>
+        <li>Three businesses in one forecourt fails without physical segregation.</li>
+        <li>Hospitality execution — not concept — decides year-10 survival.</li>
+        <li>Weighbridge is a cash-flow utility, not a growth business. Price it as such.</li>
+        <li>A written father-son operating contract precedes any land purchase.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Divergent signals</h4>
+      <ul>
+        <li>Weighbridge: asset or liability? Finance says asset, brand says liability.</li>
+        <li>Can two people execute Blue Ocean differentiation for a decade?</li>
+        <li>EV charging: anchor tenant or sunk-cost bet? Depends on CPO commit.</li>
+      </ul>
+      <h4>Kill criteria — walk away if any is true</h4>
+      <ul>
+        <li>Only plot available is under 0.5 acre or forces shared HV/LV access.</li>
+        <li>NHAI master plan shows bypass or re-alignment within 5 km.</li>
+        <li>Father's 5-year health outlook can't sustain 10–12 hr days for 24 months.</li>
+        <li>No named CPO will commit to a site LOI at this plot.</li>
+        <li>Capex + 3-year reserves exceed 40% of liquid net worth.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="tag">Final verdict</span>
+    <p><strong>Conditional GO</strong> — as a land-appreciation play with three operating businesses that carry the holding cost. Kill any of the three within 24 months if it fails to clear its own cost of capital. Do not proceed without a plot that permits physical segregation of heavy-vehicle and light-vehicle forecourts.</p>
+  </div>
+</section>
+
+<!-- 08 DILIGENCE -->
+<section class="panel" id="p-diligence" role="tabpanel" aria-labelledby="t-diligence" hidden>
+  <div class="eyebrow">08</div>
+  <h2>Answer these five before you sign anything.</h2>
+  <p class="lead">Every one of these requires field work. The open web will not answer them. Your diligence cost for all five combined is under ₹50,000 and six weeks of weekends — cheaper than a bad plot.</p>
+
+  <ol>
+    <li><strong>Verified truck count at the specific plot</strong> — 4-week manual count on Tuesday, Saturday, post-holiday Monday, and a random Wednesday. Direction, axle class, time of day. Not scraped from corridor averages.</li>
+    <li><strong>Visit every weighbridge within 8 km.</strong> Pay for a weighment. Time the process. Observe peak-hour utilization. Ask drivers in the queue why they chose this one.</li>
+    <li><strong>NHAI 2030 master plan + PY PWD road plan + Chennai-Pondy expressway alignment.</strong> Obtain the documents, not hearsay. Confirm your stretch stays a primary truck corridor for 10+ years.</li>
+    <li><strong>Current DC fast-charger density within 50 km in both directions.</strong> Pitch Statiq / Tata Power / ChargeZone with the plot. Get a site LOI signed <em>before</em> any land advance.</li>
+    <li><strong>Residual land-use appraisal.</strong> Three recent comparable highway-frontage sales within 5 km, and an independent appraiser's residual value if all three businesses fail. The land must stand on its own.</li>
+  </ol>
+
+  <h3>The father-son contract</h3>
+  <p>Non-negotiable per Drucker. Signed before any advance payment on any plot.</p>
+  <div class="grid-2">
+    <div>
+      <h4>Must define</h4>
+      <ul>
+        <li>Roles and decision rights (capex, hiring, contracts)</li>
+        <li>Daily ops vs. weekly review split</li>
+        <li>Tie-breaker mechanism on disagreements</li>
+        <li>Capital contribution split + future injections</li>
+        <li>Profit distribution — reinvest % vs drawdown %</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Must define (continued)</h4>
+      <ul>
+        <li>Exit mechanism at year 3 / 5 / 10</li>
+        <li>Health contingency and succession</li>
+        <li>Formal quarterly P&amp;L review cadence</li>
+        <li>Monthly P&amp;L <em>by line of business</em> — prevents the Doom Loop where weighbridge cash masks a dying café</li>
+        <li>24-month kill-clause per line with pre-agreed criteria</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout stop">
+    <span class="tag">Last sanity check before advance payment</span>
+    <p>Walk the plot. Can a multi-axle 22-wheeler enter HV gate, traverse the platform, turn around, and exit without hitting anything? From the coffee seating, can you see the weighbridge? If yes, segregation isn't real. From the highway at 60 km/h, can you read the signage for each segment in under 4 seconds? Stand on the plot during a monsoon downpour — where does water pool?</p>
+  </div>
+</section>
+
+<!-- 09 FINANCIALS -->
+<section class="panel" id="p-financials" role="tabpanel" aria-labelledby="t-financials" hidden>
+  <div class="eyebrow">09</div>
+  <h2>What it costs. What it must clear.</h2>
+  <p class="lead">Indicative ranges. Land rate varies 2–3× with frontage, highway side, and revenue-village circle rate. The real hurdle isn't cash flow — it's beating the Nifty 50 index-fund alternative after risk and labour premium.</p>
+
+  <h3>Capex envelope · Expected case (0.75 acre)</h3>
+  <table>
+    <thead><tr><th>Line item</th><th class="num">Low</th><th class="num">Expected</th><th class="num">High</th></tr></thead>
+    <tbody>
+      <tr><td>Land · 0.5 / 0.75 / 1.0 acre</td><td class="num">₹50 L</td><td class="num">₹75 L – 1.0 Cr</td><td class="num">₹1.2–1.5 Cr</td></tr>
+      <tr><td>Weighbridge (turnkey)</td><td class="num">₹15 L</td><td class="num">₹22 L</td><td class="num">₹25 L</td></tr>
+      <tr><td>EV landlord capex (civil, HT line, transformer, fencing)</td><td class="num">₹10 L</td><td class="num">₹15 L</td><td class="num">₹20 L</td></tr>
+      <tr><td>Coffee shop build + kitchen equipment</td><td class="num">₹20 L</td><td class="num">₹30 L</td><td class="num">₹40 L</td></tr>
+      <tr><td>Segregation works (berm, boundary, dual gates)</td><td class="num">₹4 L</td><td class="num">₹8 L</td><td class="num">₹12 L</td></tr>
+      <tr><td>Site development (grading, drainage, paving, utilities)</td><td class="num">₹15 L</td><td class="num">₹25 L</td><td class="num">₹35 L</td></tr>
+      <tr><td>Signage, branding, launch marketing</td><td class="num">₹3 L</td><td class="num">₹5 L</td><td class="num">₹8 L</td></tr>
+      <tr><td>NHAI NOC, NA conversion, licences, legal</td><td class="num">₹3 L</td><td class="num">₹5 L</td><td class="num">₹8 L</td></tr>
+      <tr><td>Working capital (12 months)</td><td class="num">₹10 L</td><td class="num">₹15 L</td><td class="num">₹25 L</td></tr>
+      <tr><td>Subtotal (ex-land)</td><td class="num">~₹80 L</td><td class="num">~₹1.3 Cr</td><td class="num">~₹1.7 Cr</td></tr>
+      <tr class="highlight"><td><strong>Total (with land)</strong></td><td class="num"><strong>~₹1.3 Cr</strong></td><td class="num"><strong>~₹2.0–2.3 Cr</strong></td><td class="num"><strong>~₹2.9–3.2 Cr</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>The hurdle rate</h3>
+  <div class="callout">
+    <span class="tag">Opportunity-cost check</span>
+    <p>₹2 Cr into Nifty 50 at 12% nominal compounds to ~₹6.2 Cr over 10 years — zero operational effort, fully liquid. <strong>This venture must clear that bar plus a risk premium</strong> for illiquidity, operational burden, father's time, and regulatory tail risk.</p>
+    <p>The honest case is not "beats the index." It is: <em>"the land appreciates at 8–10% in a growing Pondy corridor AND the businesses cover operating costs AND this gives my father a purposeful decade."</em> If any of those three legs fails, the index wins.</p>
+  </div>
+
+  <h3>Kill criteria · one more time</h3>
+  <table>
+    <tbody>
+      <tr><td>Plot &lt; 0.5 acre or requires shared HV/LV access</td><td>Walk away</td></tr>
+      <tr><td>Bypass / re-alignment within 5 km in NHAI 10-year plan</td><td>Walk away</td></tr>
+      <tr><td>Father's 5-year health cannot sustain 10–12 hr days for 24 months</td><td>Walk away</td></tr>
+      <tr><td>No named CPO site LOI before land purchase</td><td>Drop EV leg or walk away</td></tr>
+      <tr><td>Capex + 3-yr reserves &gt; 40% of liquid net worth</td><td>Walk away</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="shell">
+  <hr>
+  <h4>Read the underlying files</h4>
+  <p>This HTML brief is a consolidation of eight markdown files in <code>APM/Weighbridge-Venture/</code>. Open them for the full analysis, source citations, and sizing derivations.</p>
+  <ul>
+    <li><a href="README.md">README.md</a> — executive summary</li>
+    <li><a href="01-panel.md">01-panel.md</a> — 9-expert business panel</li>
+    <li><a href="02-sizing-loop.md">02-sizing-loop.md</a> — weighbridge Karpathy loop</li>
+    <li><a href="03-ev-and-coffee.md">03-ev-and-coffee.md</a> — EV and coffee sizing loop</li>
+    <li><a href="04-site-plan.md">04-site-plan.md</a> — consolidated site plan</li>
+    <li><a href="05-research-log.md">05-research-log.md</a> — URL-cited research log</li>
+    <li><a href="06-diligence-checklist.md">06-diligence-checklist.md</a> — field checklist</li>
+    <li><a href="07-location-analysis.md">07-location-analysis.md</a> — location scorecard</li>
+  </ul>
+  <p style="margin-top:var(--gap-3); font-size: var(--t-xs); color: var(--muted);">Prepared 2026-04-23 · No external fonts, libraries, or trackers. Open in any browser. Print-friendly.</p>
+</footer>
+
+<script>
+(function(){
+  const tabs = document.querySelectorAll('nav.tabs [role="tab"]');
+  const panels = document.querySelectorAll('main .panel');
+
+  function activate(id) {
+    tabs.forEach(t => {
+      const selected = t.getAttribute('aria-controls') === id;
+      t.setAttribute('aria-selected', selected ? 'true' : 'false');
+    });
+    panels.forEach(p => {
+      if (p.id === id) p.removeAttribute('hidden');
+      else p.setAttribute('hidden', '');
+    });
+    window.scrollTo({ top: document.querySelector('nav.tabs').offsetTop - 4, behavior: 'smooth' });
+  }
+
+  tabs.forEach(t => {
+    t.addEventListener('click', () => activate(t.getAttribute('aria-controls')));
+    t.addEventListener('keydown', e => {
+      const list = Array.from(tabs);
+      const i = list.indexOf(t);
+      if (e.key === 'ArrowRight') { e.preventDefault(); list[(i+1) % list.length].focus(); list[(i+1) % list.length].click(); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); list[(i-1+list.length) % list.length].focus(); list[(i-1+list.length) % list.length].click(); }
+    });
+  });
+
+  window.showTab = function(short) { activate('p-' + short); };
+})();
+</script>
+</body>
+</html>
